@@ -1,0 +1,68 @@
+<!--
+forums_data: overall container
+
+user: user container: %id (login, pass, incept, status, meta)
+forum: forum container: %id, %in (title, content, meta)
+topic: topic container: %id, %author, %in  (title, incept, status, meta, tag)
+post: post container: %id, %author (incept, content, status, meta)
+
+title: CDATA - no HTML
+content: CDATA  - HTML that is displayed on page
+incept: MySQL formatted timestamp (GMT)
+status: (int) 0 = normal, 1 = deleted
+tag: CDATA - literal, raw tag name
+meta: CDATA - meta value %key
+
+%id: type_# (e.g. forum_1, user_49283)
+%in: id of parent object if xml element has no non-trivial parent
+%author: user_#
+-->
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<forums_data>
+
+             <user id="{ID}">
+                   <login>{user_login}</login>
+                   <pass>{user_pass}</pass>
+                   <incept>{user_registered}</incept>
+                   <status>{user_status}</status>
+                   <meta key="email"><![CDATA[{email_address}]]></meta>
+                   <meta key="url"><![CDATA[{url}]]></meta>
+                   <meta key="nicename"><![CDATA[{nicename}]]></meta>
+                   <meta key="{meta_key}"><![CDATA[{meta_value}]]></meta>
+                   <!-- ... -->
+             </user>
+
+             <forum id="{forum_id}" in="{forum_id}">
+                    <title><![CDATA[{forum_name}]]></title>
+                    <content><![CDATA[{forum_desc}]]></content>
+                    <meta key="{meta_key}"><![CDATA[{meta_value}]]></meta>
+                    <!-- ... -->
+             </forum>
+
+             <topic id="{topic_id}" author="{topic_poster}" in="{forum_id}">
+                    <title><![CDATA[{topic_title}]]></title>
+                    <incept>topic_start_time</incept>
+                    <status>{topic_status}</status>
+                    <meta key="topic_resolved"><![CDATA[{topic_resolved}]]></meta>
+                    <meta key="topic_open"><![CDATA[{topic_open}]]></meta>
+                    <meta key="topic_sticky"><![CDATA[{topic_sticky}]]></meta>
+                    <meta key="{meta_key}"><![CDATA[{meta_value}]]></meta>
+                    <!-- ... -->
+                    <tag><![CDATA[{raw_tag}]]></tag>
+                    <!-- ... -->
+
+                    <post id="{post_id}" author="{poster_id}">
+                          <title><![CDATA[{topic_title}]]></title>
+                          <content><![CDATA[{post_text}]]></content>
+                          <incept>post_time</incept>
+                          <status>{post_status}</status>
+                          <meta key="ip"><![CDATA[{poster_ip}]]></meta>
+                          <meta key="{meta_key}"><![CDATA[{meta_value}]]></meta>
+                          <!-- ... -->
+                    </post>
+
+             </topic>
+
+</forums_data>
