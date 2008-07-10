@@ -15,6 +15,7 @@ class WFIP extends WF_Parse
 	var $export_lib;
 
 	var $existing_data;
+	var $skipped_data;
 
 	var $id_mappings;
 
@@ -27,6 +28,7 @@ class WFIP extends WF_Parse
 	var $import_users = TRUE;
 	var $preserve_admins = TRUE;
 	var $preserve_current_user = TRUE;
+	var $preserve_ids = FALSE;
 
 	function WFIP
 	{
@@ -124,35 +126,43 @@ class WFIP extends WF_Parse
 
 	function user_conflict ($user)
 	{
+		if ($this->preserve_current_user && $this->is_current_user ($user))
+		{
+			$conflicts[] = 'current_user';
+		}
+		if $this->preserve_admins && $this->is_admin ($user))
+		{
+			$conflicts[] = 'admin';
+		}
 		if (in_array ($user['id'], $this->existing_data['user_ids']))
 		{
-			return 'id';
+			$conflicts[] = 'id';
 		}
 		if (in_array ($user['login'], $this->existing_data['user_logins']))
 		{
-			return 'login';
+			$conflicts[] = 'login';
 		}
-		return FALSE;
+		return $conflicts;
 	}
 
 	function forum_conflict ($forum)
 	{
 		if (in_array ($forum['id'], $this->existing_data['forum_ids']))
 		{
-			return 'id';
+			$conflicts[] = 'id';
 		}
 		if (in_array ($forum['title'], $this->existing_data['forum_titles'][$forum['in']]))
 		{
-			return 'title';
+			$conflicts[] = 'title';
 		}
-		return FALSE;
+		return $conflicts;
 	}
 
 	function topic_conflict ($topic)
 	{
 		if (in_array ($topic['id'], $this->existing_data['topic_ids']))
 		{
-			return 'id';
+			return TRUE;
 		}
 		return FALSE;
 	}
@@ -161,7 +171,7 @@ class WFIP extends WF_Parse
 	{
 		if (in_array ($post['id'], $this->existing_data['post_ids']))
 		{
-			return 'id';
+			TRUE;
 		}
 		return FALSE;
 	}
@@ -170,14 +180,17 @@ class WFIP extends WF_Parse
 	{
 		foreach ($this->data['users'] as $user)
 		{
-			if ('id' == $this->user_conflict ($user))
+			$conflicts = $this->user_conflict ($user);
+			if (in_array ('current_user', $conflicts) ||
+				in_array ('admin', $conflicts) ||
+				in_array ('login', $conflicts) ||
+				in_array ('id', $conflicts) && $this->preserve_ids)
 			{
-				$this->id_mappings['users'][$user['id']] = $this->next_user_id++;
-				$user['id'] = $this->id_mappings['users'][$user['id']];
+				$this->skip_user ($user);
 			}
-			elseif ('login' == $this->user_conflict ($user))
+			if (in_array ('id', $conflicts) && !$this->preserve_ids)
 			{
-				// WHAT AM I GOING TO DO?!?!?
+				$user = $this->update_user_id ($user);
 			}
 		}
 	}
@@ -186,14 +199,15 @@ class WFIP extends WF_Parse
 	{
 		foreach ($this->data['forums'] as $forum)
 		{
-			if ('id' == $this->forum_conflict ($forum))
+			$conflicts = $this->forum_conflict ($forum);
+			if (in_array ('title', $conflicts) ||
+				in_array ('id', $conflicts) && $this->preserve_ids)
 			{
-				$this->id_mappings['forums'][$forum['id']] = $this->next_forum_id++;
-				$forum['id'] = $this->id_mappings['forums'][$forum['id']];
+				$this->skip_forum ($forum);
 			}
-			elseif ('title' == $this->forum_conflict ($forum))
+			if (in_array ('id', $conflicts) && !$this->preserve_ids)
 			{
-				// WHAT AM I GOING TO DO?!?!?
+				$forum = $this->update_forum_id ($forum);
 			}
 		}
 	}
@@ -202,20 +216,84 @@ class WFIP extends WF_Parse
 	{
 		foreach ($this->data['topic'] as $topic)
 		{
-			if ('id' == $this->topic_conflict ($topic))
+			$topic_conflict = $this->topic_conflict ($topic);
+			if ($topic_conflict && $this->preserve_ids)
 			{
-				$this->id_mappings['topics'][$topic['id']] = $this->next_topic_id++;
-				$topic['id'] = $this->id_mappings['topics'][$topic['id']];
+				$this->skip_topic ($topic);
+			}
+			elseif ($topic_conflict)
+			{
+				$topic = $this->update_topic_id ($topic);
 			}
 			foreach ($topic['posts'] as $post)
 			{
-				if ('id' == $this->post_conflict ($post))
+				$post_conflict = $this->post_conflict ($post)
+				if ($post_conflict && $this->preserve_ids)
 				{
-					$this->id_mappings['posts'][$post['id']] = $this->next_topic_id++;
-					$post['id'] = $this->id_mappings['posts'][$post['id']];
+					$this->skip_post ($post);
+				}
+				elseif ($post_conflict)
+				{
+					$post = $this->update_post_id ($post);
 				}
 			}
 		}
+	}
+
+	function skip_user ($user)
+	{
+		$this->skipped_data['users'][] = $user;
+		$remove = array_search ($user, $this->data['users']);
+		unset ($this->data['users'][$remove]);
+	}
+
+	function skip_forum ($forum)
+	{
+		$this->skipped_data['forums'][] = $forum;
+		$remove = array_search ($forum, $this->data['forums']);
+		unset ($this->data['forums'][$remove]);
+	}
+
+	function skip_topic ($topic)
+	{
+		$this->skipped_data['topics'][] = $topic;
+		$remove = array_search ($topic, $this->data['topics']);
+		unset ($this->data['topics'][$remove]);
+	}
+
+	function skip_post ($post)
+	{
+		$this->skipped_data['topics'][$post['in']]['posts'] = $post;
+		$remove = array_search ($post, $this->data['topics'][$post['in']]['posts']);
+		unset ($this->data['topics'][$post['in']]['posts'][$remove]);
+	}
+
+	function update_user_id ($user)
+	{
+		$this->id_mappings['users'][$user['id']] = $this->next_user_id++;
+		$user['id'] = $this->id_mappings['users'][$user['id']];
+		return $user;
+	}
+
+	function update_forum_id ($forum)
+	{
+		$this->id_mappings['forums'][$forum['id']] = $this->next_forum_id++;
+		$forum['id'] = $this->id_mappings['forums'][$forum['id']];
+		return $forum;
+	}
+
+	function update_topic_id ($topic)
+	{
+		$this->id_mappings['topics'][$topic['id']] = $this->next_topic_id++;
+		$topic['id'] = $this->id_mappings['topics'][$topic['id']];
+		return $topic;
+	}
+
+	function update_post_id ($post)
+	{
+		$this->id_mappings['posts'][$post['id']] = $this->next_topic_id++;
+		$post['id'] = $this->id_mappings['posts'][$post['id']];
+		return $post;
 	}
 
 	function tag_exists ($tag)
