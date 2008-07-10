@@ -87,7 +87,6 @@ class WFIP_bbPress extends WFIP
 	{
 		foreach ($this->data['users'] as $user)
 		{
-			$data = array ();
 			$data['ID'] = $user['id'];
 			$data['user_login'] = $user['login'];
 			// Check type!
@@ -113,17 +112,66 @@ class WFIP_bbPress extends WFIP
 
 	function insert_forums ()
 	{
-
+		foreach ($this->data['forums'] as $forum)
+		{
+			$data['forum_id'] = $forum['id'];
+			$data['forum_parent'] = $forum['in'];
+			$data['forum_name'] = $forum['title'];
+			$data['forum_desc'] = $forum['content'];
+			$meta = $forum['meta'];
+			$data['forum_slug'] = $meta['forum_slug'];
+			$data['forum_order'] = $meta['forum_order'];
+			$this->insert ($this->db->forums, $data);
+		}
 	}
 
 	function insert_topics ()
 	{
+		foreach ($this->data['topics'] as $topic)
+		{
+			$data['topic_id'] = $topic['id'];
+			$data['forum_id'] = $topic['in'];
+			$data['topic_title'] = $topic['title'];
+			$data['topic_poster'] = $topic['author'];
+			$data['topic_start_time'] = $topic['incept'];
+			$data['topic_status'] = $topic['status'];
+			$meta = $topic['meta'];
+			$data['topic_slug'] = $meta['slug'];
+			$data['topic_open'] = $meta['open'];
+			$data['topic_sticky'] = $meta['sticky'];
+			unset ($meta['slug'], $meta['open'], $meta['sticky'];
+			// topic_poster_name
+			// topic_last_poster
+			// topic_last_poster_name
+			// topic_time
+			// topic_last_post_id
+			$data['topic_posts'] = sizeof ($topic['posts']);
+			$data['tag_count'] = sizeof ($topic['tags']);			
 
+			$this->insert ($this->db->topics, $data);
+			$this->insert_topic_meta ($meta);
+			$this->insert_posts ($topic['id'], $topic['in'], $topic['posts']);
+		}
 	}
 
-	function insert_posts ()
+	function insert_posts ($topic_id, $forum_id, $posts)
 	{
-
+		foreach ($posts as $post)
+		{
+			$data['post_id'] = $post['id'];
+			$data['forum_id'] = $forum_id;
+			$data['topic_id'] = $topic_id;
+			$data['poster_id'] = $post['author'];
+			$data['post_text'] = $post['content'];
+			$data['post_time'] = $post['incept'];
+			$if (0 === $post['status'] || 1 === $post['status'])
+			{
+				$data['post_status'] = $post['status'];
+			}
+			$meta = $post['meta'];
+			$data['poster_ip'] = $meta['poster_ip'];
+			$this->insert ($this->db->posts, $data);
+		}
 	}
 
 	function insert_tags ($topic_id)
