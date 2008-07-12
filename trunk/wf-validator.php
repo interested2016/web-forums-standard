@@ -14,7 +14,7 @@ function display_form ()
 		<title>Web Forum Export/Import Standard Validator</title>
 	</head>
 	<body>
-		<form enctype="multipart/form-data" action="" method="POST">
+		<form enctype="multipart/form-data" action="" method="post">
 			<p>
 				<input type="file" name="import_file" /><br />
 				<input type="submit" name="validate" value="Validate File" />
