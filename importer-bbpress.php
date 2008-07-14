@@ -13,11 +13,11 @@ Author URI: http://www.stealyourcarbon.net/
  */
 function import_init ()
 {
-	require_once ('wf-parse.php');
-	require_once ('wfip.php');
-	require_once ('wfip-bbpress.php');
-	require_once ('wfxp.php');
-	require_once ('wfxp-bbpress.php');
+	require_once ('importer/wf-parse.php');
+	require_once ('importer/wfip.php');
+	require_once ('importer/wfip-bbpress.php');
+	require_once ('exporter/wfxp.php');
+	require_once ('exporter/wfxp-bbpress.php');
 }
 
 /**
@@ -63,7 +63,34 @@ function import_main ()
 		$bbip->file_contents = $bbip->remove_element ($current[1], $bbip->file_contents);
 	}
 
-	// Magic!
+	$bbip->import_prep ();
+	if ($bbip->import_users)
+	{
+		$bbip->insert_users ();
+	}
+	if ($bbip->import_content)
+	{
+		$bbip->insert_forums ();
+		$bbip->insert_topics ();
+	}
+	display_import_results ($bbip);
+}
+
+/**
+ * Displays the results of the importation process.
+ *
+ * Displays message upon successful importation.  Also displays
+ * data that was skipped based on user import options.
+ * (Needs prettification.)
+ */
+
+function display_import_results ($bbip)
+{
+?>
+	<p><?php _e ('The importation process was completed successfully!'); ?></p>
+<?php if ($bbip->skipped_data) : ?>
+	<p><?php _e ('Based on the options you chose and conflicts with existing data, some data was skipped.  This data will be shown below.  Sorry it\'s not very pretty yet...'); ?></p>
+	<pre><?php print_r ($bbip->skipped_data); ?></pre>
 }
 
 /**

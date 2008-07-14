@@ -13,8 +13,8 @@ Author URI: http://www.stealyourcarbon.net/
  */
 function export_init ()
 {
-	require_once ('wfxp.php');
-	require_once ('wfxp-bbpress.php');
+	require_once ('exporter/wfxp.php');
+	require_once ('exporter/wfxp-bbpress.php');
 }
 
 /**
