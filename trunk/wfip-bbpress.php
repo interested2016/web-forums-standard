@@ -203,6 +203,32 @@ class WFIP_bbPress extends WFIP
 		}
 	}
 
+	function import_prep ()
+	{
+		if ($this->import_users)
+		{
+			$this->fetch_existing_users ();
+			$this->prep_existing_user_data ();
+		}
+		if ($this->import_content)
+		{
+			$this->fetch_existing_forums ();
+			$this->fetch_existing_topics ();
+			$this->prep_existing_content_data ();
+		}
+		$this->init_id_mappings ();
+		$this->init_next_ids ();
+	
+		if ($this->import_users)
+		{
+			$this->resolve_users ();
+		}
+		if ($this->import_content)
+		{
+			$this->resolve_forums ();
+			$this->resolve_topics ();
+		}
+	}
 	
 }
 
