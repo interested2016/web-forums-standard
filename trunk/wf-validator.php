@@ -70,6 +70,7 @@ function validate ()
 		$parse->call_element ($current);
 		$parse->file_contents = $parse->remove_element ($current[1], $parse->file_contents);
 	}
+	$parse->check_for_duplicates ();
 	$result = 'This is a valid export file.  You should be able to import this properly using a compatible software plugin.';
 	display_result ($result, $parse->forum_data);
 }

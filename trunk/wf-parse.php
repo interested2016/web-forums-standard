@@ -593,6 +593,87 @@ class WF_Parse
 		}
 		return $content;
 	}
+	
+	/**
+	 * Checks import data for duplicate users.
+	 */
+	function user_duplicates ()
+	{
+		foreach ($this->data['users'] as $user)
+		{
+			$ids[] = $user['id'];
+			$logins[] = $user['login'];
+		}
+		if (sizeof ($ids) != sizeof (array_flip ($ids)))
+		{
+			die ('Duplicate user IDs in data.');
+		}
+		if (sizeof ($logins) != sizeof (array_flip ($logins)))
+		{
+			die ('Duplicate user logins in data.');
+		}
+	}
+
+	/**
+	 * Checks import data for duplicate forums.
+	 */
+	function forum_duplicates ()
+	{
+		foreach ($this->data['forums'] as $forum)
+		{
+			$ids[] = $forum['id'];
+			$titles[$forum['in']][] = $forum['title'];
+			$slugs[] = $forum['meta']['slug'];
+		}
+		if (sizeof ($ids) != sizeof (array_flip ($ids)))
+		{
+			die ('Duplicate forum IDs in data.');
+		}
+		foreach ($titles as $subtitles)
+		{
+			if (sizeof ($subtitles) != sizeof (array_flip ($subtitles)))
+			{
+				die ('Duplicate forum titles under the same parent in data.');
+			}
+		}
+		if (sizeof ($slugs) != sizeof (array_flip ($slugs)))
+		{
+			die ('Duplicate forum slugs in data.');
+		}
+	}
+
+	/**
+	 * Checks import data for duplicate topics and posts.
+	 */
+	function topic_duplicates ()
+	{
+		foreach ($this->data['topics'] as $topic)
+		{
+			$topic_ids[] = $topic['id'];
+			foreach ($topic['posts'] as $post)
+			{
+				$post_ids[] = $post['id'];
+			}
+		}
+		if (sizeof ($topic_ids) != sizeof (array_flip ($topic_ids)))
+		{
+			die ('Duplicate topic IDs in data.');
+		}
+		if (sizeof ($post_ids) != sizeof (array_flip ($post_ids)))
+		{
+			die ('Duplicate post IDs in data.');
+		}
+	}
+
+	/**
+	 * Runs individual duplicate-checking functions.
+	 */
+	function check_for_duplicates ()
+	{
+		$this->user_duplicates ();
+		$this->forum_duplicates ();
+		$this->topic_duplicates ();
+	}
 
 }
 

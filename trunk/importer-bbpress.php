@@ -62,6 +62,7 @@ function import_main ()
 		$bbip->call_element ($current);
 		$bbip->file_contents = $bbip->remove_element ($current[1], $bbip->file_contents);
 	}
+	$bbip->check_for_duplicates ();
 
 	$bbip->import_prep ();
 	if ($bbip->import_users)
