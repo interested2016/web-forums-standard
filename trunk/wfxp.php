@@ -11,6 +11,8 @@
 class WFXP
 {
 
+	var $db;
+	
 	/**
 	 * Adds formatted user data to the output.
 	 */

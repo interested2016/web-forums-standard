@@ -30,7 +30,7 @@ class WFIP extends WF_Parse
 	var $preserve_current_user = TRUE;
 	var $preserve_ids = FALSE;
 
-	function WFIP
+	function WFIP ()
 	{
 		$this->WF_Parse ();
 	}
@@ -130,7 +130,7 @@ class WFIP extends WF_Parse
 		{
 			$conflicts[] = 'current_user';
 		}
-		if $this->preserve_admins && $this->is_admin ($user))
+		if ($this->preserve_admins && $this->is_admin ($user))
 		{
 			$conflicts[] = 'admin';
 		}
@@ -227,7 +227,7 @@ class WFIP extends WF_Parse
 			}
 			foreach ($topic['posts'] as $post)
 			{
-				$post_conflict = $this->post_conflict ($post)
+				$post_conflict = $this->post_conflict ($post);
 				if ($post_conflict && $this->preserve_ids)
 				{
 					$this->skip_post ($post);
@@ -298,7 +298,7 @@ class WFIP extends WF_Parse
 
 	function tag_exists ($tag)
 	{
-		return in_array ($tag, $this->existing_data['tags']))
+		return in_array ($tag, $this->existing_data['tags']);
 	}
 
 }
