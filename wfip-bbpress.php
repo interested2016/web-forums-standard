@@ -13,8 +13,6 @@ class WFIP_bbPress extends WFIP
 	function WFIP_bbPress ()
 	{
 		$this->WFIP ();
-		require_once ('wfxp.php');
-		require_once ('wfxp-bbpress.php');
 		$this->export_lib = new WFXP_bbPress;
 	}
 
@@ -139,7 +137,7 @@ class WFIP_bbPress extends WFIP
 			$data['topic_slug'] = $meta['slug'];
 			$data['topic_open'] = $meta['open'];
 			$data['topic_sticky'] = $meta['sticky'];
-			unset ($meta['slug'], $meta['open'], $meta['sticky'];
+			unset ($meta['slug'], $meta['open'], $meta['sticky']);
 			// topic_poster_name
 			// topic_last_poster
 			// topic_last_poster_name
@@ -164,7 +162,7 @@ class WFIP_bbPress extends WFIP
 			$data['poster_id'] = $post['author'];
 			$data['post_text'] = $post['content'];
 			$data['post_time'] = $post['incept'];
-			$if (0 === $post['status'] || 1 === $post['status'])
+			if (0 === $post['status'] || 1 === $post['status'])
 			{
 				$data['post_status'] = $post['status'];
 			}
@@ -189,7 +187,8 @@ class WFIP_bbPress extends WFIP
 	{
 		foreach ($user_meta as $meta)
 		{
-			$data = array ('user_id' => user_meta, 'meta_key' => $meta['key'], 'meta_value' => $meta['value']);
+			$key = key ($meta);
+			$data = array ('user_id' => user_meta, 'meta_key' => $key, 'meta_value' => $meta[$key]);
 			$this->insert ($this->db->user_meta, $data);
 		}
 	}
@@ -198,7 +197,8 @@ class WFIP_bbPress extends WFIP
 	{
 		foreach ($topic_meta as $meta)
 		{
-			$data = array ('object_type' => 'bb_topic', 'object_id' => $topic_id, 'meta_key' => $meta['key'], 'meta_value' => $meta['value']);
+			$key = key ($meta);
+			$data = array ('object_type' => 'bb_topic', 'object_id' => $topic_id, 'meta_key' => $key, 'meta_value' => $meta[$key]);
 			$this->insert ($this->db->meta, $data);
 		}
 	}

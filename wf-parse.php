@@ -277,7 +277,7 @@ class WF_Parse
 				$result = $this->call_element ($current);
 				if ('meta' == $current[0])
 				{
-					$user['meta'][] = $result;
+					$user['meta'][$result['key']] = $result['value'];
 				}
 				else
 				{
@@ -310,7 +310,7 @@ class WF_Parse
 				$result = $this->call_element ($current);
 				if ('meta' == $current[0])
 				{
-				$forum[$current[0]][] = $result;
+				$forum[$current[0]][$result['key']] = $result['value'];
 				}
 				else
 				{
@@ -348,7 +348,7 @@ class WF_Parse
 				}
 				elseif ('meta' == $current[0])
 				{
-					$topic[$current[0]][] = $result;
+					$topic[$current[0]][$result['key']] = $result['value'];
 				}
 				else
 				{
@@ -381,7 +381,7 @@ class WF_Parse
 				$result = $this->call_element ($current);
 				if ('meta' == $current[0])
 				{
-					$post[$current[0]][] = $result;
+					$post[$current[0]][$result['key']] = $result['value'];
 				}
 				else
 				{
@@ -599,7 +599,7 @@ class WF_Parse
 	 */
 	function user_duplicates ()
 	{
-		foreach ($this->data['users'] as $user)
+		foreach ($this->forum_data['users'] as $user)
 		{
 			$ids[] = $user['id'];
 			$logins[] = $user['login'];
@@ -619,7 +619,7 @@ class WF_Parse
 	 */
 	function forum_duplicates ()
 	{
-		foreach ($this->data['forums'] as $forum)
+		foreach ($this->forum_data['forums'] as $forum)
 		{
 			$ids[] = $forum['id'];
 			$titles[$forum['in']][] = $forum['title'];
@@ -647,7 +647,7 @@ class WF_Parse
 	 */
 	function topic_duplicates ()
 	{
-		foreach ($this->data['topics'] as $topic)
+		foreach ($this->forum_data['topics'] as $topic)
 		{
 			$topic_ids[] = $topic['id'];
 			foreach ($topic['posts'] as $post)

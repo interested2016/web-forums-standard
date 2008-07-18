@@ -13,8 +13,11 @@ Author URI: http://www.stealyourcarbon.net/
  */
 function export_init ()
 {
-	require_once ('exporter/wfxp.php');
-	require_once ('exporter/wfxp-bbpress.php');
+	if (!class_exists ('WFXP'))
+	{
+		require_once ('exporter/wfxp.php');
+		require_once ('exporter/wfxp-bbpress.php');
+	}
 }
 
 /**
@@ -25,7 +28,7 @@ function export_main ()
 	global $bbdb;
 	export_init ();
 	$bbxp = new WFXP_bbPress;
-	$bbxp->db &= $bbdb;
+	$bbxp->db = $bbdb;
 	$filename = 'bbpress' . date ('Y-m-d') . '.xml';
 
 	$bbxp->write_header ($filename);

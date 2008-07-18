@@ -9,6 +9,15 @@
  */
 class WFXP_bbPress extends WFXP
 {
+
+	/**
+	 * Alias for BPDB's get_results that eliminates a parameter.
+	 */
+	function fetch ($query)
+	{
+		return $this->db->get_results ($query, 'ARRAY_A');
+	}
+	
 	/**
 	 * Fetches users from the database.
 	 */
