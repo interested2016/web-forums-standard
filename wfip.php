@@ -56,15 +56,15 @@ class WFIP extends WF_Parse
 
 	function init_id_mappings ()
 	{
-		foreach ($this->data['users'] as $user)
+		foreach ($this->forum_data['users'] as $user)
 		{
 			$this->id_mappings['users'][$user['id']] = $user['id'];
 		}
-		foreach ($this->data['forums'] as $forum)
+		foreach ($this->forum_data['forums'] as $forum)
 		{
 			$this->id_mappings['forums'][$forum['id']] = $forum['id'];
 		}
-		foreach ($this->data['topics'] as $topic)
+		foreach ($this->forum_data['topics'] as $topic)
 		{
 			$this->id_mappings['topics'][$topic['id']] = $topic['id'];
 			foreach ($topic['posts'] as $post)
@@ -78,19 +78,23 @@ class WFIP extends WF_Parse
 	function init_next_ids ()
 	{
 		$users = array_merge ($this->existing_data['user_ids'], $this->id_mappings['users']);
-		$users = array_values (arsort ($users));
+		arsort ($users);
+		$users = array_values ($users);
 		$this->next_user_id = $users[0];
 		
 		$forums = array_merge ($this->existing_data['forum_ids'], $this->id_mappings['forums']);
-		$forums = array_values (arsort ($forums));
+		arsort ($forums);
+		$forums = array_values ($forums);
 		$this->next_forum_id = $forums[0];
 		
 		$topics = array_merge ($this->existing_data['topic_ids'], $this->id_mappings['topics']);
-		$topics = array_values (arsort ($topics));
+		arsort ($topics);
+		$topics = array_values ($topics);
 		$this->next_topic_id = $topics[0];
 		
 		$posts = array_merge ($this->existing_data['post_ids'], $this->id_mappings['posts']);
-		$posts = array_values (arsort ($posts));
+		arsort ($posts);
+		$posts = array_values ($posts);
 		$this->next_post_id = $posts[0];
 	}
 
@@ -117,15 +121,19 @@ class WFIP extends WF_Parse
 			{
 				$this->existing_data['post_ids'][] = $post['id'];
 			}
-			foreach ($topic['tags'] as $tag)
+			if ($topic['tags'])
 			{
-				$this->existing_data['tags'][] = $tag;
+				foreach ($topic['tags'] as $tag)
+				{
+					$this->existing_data['tags'][] = $tag;
+				}
 			}
 		}
 	}
 
 	function user_conflict ($user)
 	{
+		$conflicts = array ();
 		if ($this->preserve_current_user && $this->is_current_user ($user))
 		{
 			$conflicts[] = 'current_user';
@@ -147,6 +155,7 @@ class WFIP extends WF_Parse
 
 	function forum_conflict ($forum)
 	{
+		$conflicts = array ();
 		if (in_array ($forum['id'], $this->existing_data['forum_ids']))
 		{
 			$conflicts[] = 'id';
@@ -178,7 +187,7 @@ class WFIP extends WF_Parse
 
 	function resolve_users ()
 	{
-		foreach ($this->data['users'] as $user)
+		foreach ($this->forum_data['users'] as $user)
 		{
 			$conflicts = $this->user_conflict ($user);
 			if (in_array ('current_user', $conflicts) ||
@@ -197,7 +206,7 @@ class WFIP extends WF_Parse
 
 	function resolve_forums ()
 	{
-		foreach ($this->data['forums'] as $forum)
+		foreach ($this->forum_data['forums'] as $forum)
 		{
 			$conflicts = $this->forum_conflict ($forum);
 			if (in_array ('title', $conflicts) ||
@@ -214,7 +223,7 @@ class WFIP extends WF_Parse
 	
 	function resolve_topics ()
 	{
-		foreach ($this->data['topic'] as $topic)
+		foreach ($this->forum_data['topics'] as $topic)
 		{
 			$topic_conflict = $this->topic_conflict ($topic);
 			if ($topic_conflict && $this->preserve_ids)
@@ -243,29 +252,29 @@ class WFIP extends WF_Parse
 	function skip_user ($user)
 	{
 		$this->skipped_data['users'][] = $user;
-		$remove = array_search ($user, $this->data['users']);
-		unset ($this->data['users'][$remove]);
+		$remove = array_search ($user, $this->forum_data['users']);
+		unset ($this->forum_data['users'][$remove]);
 	}
 
 	function skip_forum ($forum)
 	{
 		$this->skipped_data['forums'][] = $forum;
-		$remove = array_search ($forum, $this->data['forums']);
-		unset ($this->data['forums'][$remove]);
+		$remove = array_search ($forum, $this->forum_data['forums']);
+		unset ($this->forum_data['forums'][$remove]);
 	}
 
 	function skip_topic ($topic)
 	{
 		$this->skipped_data['topics'][] = $topic;
-		$remove = array_search ($topic, $this->data['topics']);
-		unset ($this->data['topics'][$remove]);
+		$remove = array_search ($topic, $this->forum_data['topics']);
+		unset ($this->forum_data['topics'][$remove]);
 	}
 
 	function skip_post ($post)
 	{
 		$this->skipped_data['topics'][$post['in']]['posts'] = $post;
-		$remove = array_search ($post, $this->data['topics'][$post['in']]['posts']);
-		unset ($this->data['topics'][$post['in']]['posts'][$remove]);
+		$remove = array_search ($post, $this->forum_data['topics'][$post['in']]['posts']);
+		unset ($this->forum_data['topics'][$post['in']]['posts'][$remove]);
 	}
 
 	function update_user_id ($user)

@@ -168,7 +168,7 @@ class WFXP
 	{
 		header ('Content-Description: File Transfer');
 		header ('Content-Dispositon: attachment; filename=' . $filename);
-		header ('Content-Type: text/xml');
+		header ('Content-Type: text/xml; charset=UTF-8', true);
 
 		echo '<?xml version="1.0" encoding="UTF-8" ?>';
 ?>

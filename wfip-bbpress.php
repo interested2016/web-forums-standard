@@ -28,7 +28,6 @@ class WFIP_bbPress extends WFIP
 			$user = $this->export_lib->prep_user_data ($user, $user_meta);
 			$this->existing_data['users'][] = $user;
 		}
-		$this->prep_existing_user_data ();
 	}
 
 	/**
@@ -42,7 +41,6 @@ class WFIP_bbPress extends WFIP
 			$forum = $this->export_lib->prep_forum_data ($forum, $forum_meta);
 			$this->existing_data['forums'][] = $forum;
 		}
-		$this->prep_existing_forum_data ();
 	}
 
 	/**
@@ -59,7 +57,6 @@ class WFIP_bbPress extends WFIP
 			$topic = $this->export_lib->prep_topic_data ($topic, $topic_meta, $topic_tags, $topic_posts);
 			$this->existing_data['topics'][] = $topic;
 		}
-		$this->prep_existing_topic_data ();
 	}
 
 	function is_current_user ($user)
@@ -83,7 +80,7 @@ class WFIP_bbPress extends WFIP
 
 	function insert_users ()
 	{
-		foreach ($this->data['users'] as $user)
+		foreach ($this->forum_data['users'] as $user)
 		{
 			$data['ID'] = $user['id'];
 			$data['user_login'] = $user['login'];
@@ -103,14 +100,14 @@ class WFIP_bbPress extends WFIP
 			$this->insert ($this->db->users, $data);
 			if ($meta)
 			{
-				$this->insert_user_meta ($meta);
+				$this->insert_user_meta ($user['id'], $meta);
 			}
 		}
 	}
 
 	function insert_forums ()
 	{
-		foreach ($this->data['forums'] as $forum)
+		foreach ($this->forum_data['forums'] as $forum)
 		{
 			$data['forum_id'] = $forum['id'];
 			$data['forum_parent'] = $forum['in'];
@@ -125,7 +122,7 @@ class WFIP_bbPress extends WFIP
 
 	function insert_topics ()
 	{
-		foreach ($this->data['topics'] as $topic)
+		foreach ($this->forum_data['topics'] as $topic)
 		{
 			$data['topic_id'] = $topic['id'];
 			$data['forum_id'] = $topic['in'];
@@ -147,7 +144,8 @@ class WFIP_bbPress extends WFIP
 			$data['tag_count'] = sizeof ($topic['tags']);			
 
 			$this->insert ($this->db->topics, $data);
-			$this->insert_topic_meta ($meta);
+			$this->insert_topic_meta ($topic['id'], $meta);
+			$this->insert_tags ($topic['id'], $topic['tags']);
 			$this->insert_posts ($topic['id'], $topic['in'], $topic['posts']);
 		}
 	}
@@ -172,33 +170,31 @@ class WFIP_bbPress extends WFIP
 		}
 	}
 
-	function insert_tags ($topic_id)
+	function insert_tags ($topic_id, $tags)
 	{
-		foreach ($this->data['topics'][$topic_id]['tags'] as $tag)
+		foreach ($tags as $tag)
 		{
-			if (!tag_exists)
+			if (!$this->tag_exists ($tag))
 			{
-				add_topic_tag ($topic_id, $tag);
+				bb_add_topic_tag ($topic_id, $tag);
 			}
 		}
 	}
 
 	function insert_user_meta ($user_id, $user_meta)
 	{
-		foreach ($user_meta as $meta)
+		foreach ($user_meta as $key => $value)
 		{
-			$key = key ($meta);
-			$data = array ('user_id' => user_meta, 'meta_key' => $key, 'meta_value' => $meta[$key]);
+			$data = array ('user_id' => user_meta, 'meta_key' => $key, 'meta_value' => $value);
 			$this->insert ($this->db->user_meta, $data);
 		}
 	}
 
 	function insert_topic_meta ($topic_id, $topic_meta)
 	{
-		foreach ($topic_meta as $meta)
+		foreach ($topic_meta as $key => $value)
 		{
-			$key = key ($meta);
-			$data = array ('object_type' => 'bb_topic', 'object_id' => $topic_id, 'meta_key' => $key, 'meta_value' => $meta[$key]);
+			$data = array ('object_type' => 'bb_topic', 'object_id' => $topic_id, 'meta_key' => $key, 'meta_value' => $value);
 			$this->insert ($this->db->meta, $data);
 		}
 	}
