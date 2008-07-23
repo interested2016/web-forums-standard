@@ -96,14 +96,7 @@ class WFXP_bbPress extends WFXP
 		$user['login'] = $raw_user['user_login'];
 		if (32 < strlen ($raw_user['user_pass']))
 		{
-			if (!strcmp (substr ($raw_user['user_pass'], 0, 4), '$P$B'))
-			{
-				$user['pass']['type'] = 'phpass';
-			}
-			else
-			{
-				$user['pass']['type'] = 'unknown';
-			}
+			$user['pass']['type'] = 'phpass';
 		}
 		else
 		{
