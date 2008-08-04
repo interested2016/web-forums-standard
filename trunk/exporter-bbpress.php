@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Export
+Plugin Name: BBXF Export
 Plugin URI: http://www.bbpress.org/
 Description: Allows administrators to export forum data.
 Author: Dan Larkin
@@ -13,10 +13,10 @@ Author URI: http://www.stealyourcarbon.net/
  */
 function export_init ()
 {
-	if (!class_exists ('WFXP'))
+	if (!class_exists ('BBXP'))
 	{
-		require_once ('exporter/wfxp.php');
-		require_once ('exporter/wfxp-bbpress.php');
+		require_once ('exporter/bbxp.php');
+		require_once ('exporter/bbxp-bbpress.php');
 	}
 }
 
@@ -27,7 +27,7 @@ function export_main ()
 {
 	global $bbdb;
 	export_init ();
-	$bbxp = new WFXP_bbPress;
+	$bbxp = new BBXP_bbPress;
 	$bbxp->db = $bbdb;
 	$filename = 'bbpress' . date ('Y-m-d') . '.xml';
 
@@ -52,7 +52,7 @@ function export_page ()
 ?>
 
 	<h2><?php _e ('Export') ?></h2>
-	<p><?php _e ('When you click the button below, bbPress will generate an XML file for you to save to your computer.'); ?></p>
+	<p><?php _e ('When you click the button below, bbPress will generate a BBXF file for you to save to your computer.'); ?></p>
 	<p><?php _e ('This file will contain data about your users, forums, topics, and posts.  You can use the Import function of another bbPress installation or another compatible web forums software to import this data.'); ?></p>
 	<form action="" method="post">
 		<p class="submit">
