@@ -52,7 +52,6 @@ meta: CDATA - meta value %key
                     <!-- ... -->
                     <tag><![CDATA[{raw_tag}]]></tag>
                     <!-- ... -->
-
                     <post id="{post_id}" author="{poster_id}">
                           <title><![CDATA[{topic_title}]]></title>
                           <content><![CDATA[{post_text}]]></content>
@@ -62,7 +61,6 @@ meta: CDATA - meta value %key
                           <meta key="{meta_key}"><![CDATA[{meta_value}]]></meta>
                           <!-- ... -->
                     </post>
-
              </topic>
 
 </forums_data>
