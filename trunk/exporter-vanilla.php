@@ -44,32 +44,41 @@ function export_main ()
 function export_page ()
 {
 ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 STRICT//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Vanilla BBXF Exporter</title>
+	</head>
+	<body>
 
-	<h2><?php _e ('Export') ?></h2>
-	<p><?php _e ('When you submit the form below, Vanilla will generate a BBXF file for you to save to your computer.'); ?></p>
-	<p><?php _e ('This file will contain data about your users, forums, topics, and posts.  You can use the Import function of another Vanilla installation or another compatible web forums software to import this data.'); ?></p>
-	<form action="" method="post">
-		<fieldset><legend>MySQL Hostname</legend>
-			<input type="text" name="host" />
-		</fieldset>
-		<fieldset><legend>MySQL Database</legend>
-			<input type="text" name="database" />
-		</fieldset>
-		<fieldset><legend>MySQL Username</legend>
-			<input type="text" name="user" />
-		</fieldset>
-		<fieldset><legend>MySQL Password</legend>
-			<input type="text" name="password" />
-		</fieldset>
-		<fieldset><legend>MySQL Table Prefix</legend>
-			<input type="text" name="prefix" />
-		</fieldset>
-		<p class="submit">
-			<input type="submit" name="submit" value="<?php _e ('Download Export File'); ?>" />
-			<input type="hidden" name="exporting" value="true" />
-		</p>
-	</form>
+		<h2>Export') ?></h2>
+		<p>When you submit the form below, Vanilla will generate a BBXF file for you to save to your computer.</p>
+		<p>This file will contain data about your users, forums, topics, and posts.  You can use the Import function of another Vanilla installation or another compatible web forums software to import this data.</p>
+		<form action="" method="post">
+			<fieldset><legend>MySQL Hostname</legend>
+				<input type="text" name="host" />
+			</fieldset>
+			<fieldset><legend>MySQL Database</legend>
+				<input type="text" name="database" />
+			</fieldset>
+			<fieldset><legend>MySQL Username</legend>
+				<input type="text" name="user" />
+			</fieldset>
+			<fieldset><legend>MySQL Password</legend>
+				<input type="password" name="password" />
+			</fieldset>
+			<fieldset><legend>MySQL Table Prefix</legend>
+				<input type="text" name="prefix" />
+			</fieldset>
+			<p class="submit">
+				<input type="submit" name="submit" value="Download Export File" />
+				<input type="hidden" name="exporting" value="true" />
+			</p>
+		</form>
 
+	</body>
+</html>
 <?php
 }
 
