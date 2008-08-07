@@ -15,10 +15,12 @@ class BBXP_Vanilla extends BBXP
 	 */
 	function initialize_db ($prefix)
 	{
-		$this->db->users = $prefix . 'User';
-		$this->db->forums = $prefix . 'Category';
-		$this->db->topics = $prefix . 'Discussion';
-		$this->db->posts = $prefix . 'Comment';
+		$this->db->db_connect_host (array ('host' => $host, 'user' => $user, 'password' => $password);
+		$this->db->select ($database);
+		$this->db->table['users'] = $prefix . 'User';
+		$this->db->table['forums'] = $prefix . 'Category';
+		$this->db->table['topics'] = $prefix . 'Discussion';
+		$this->db->table['posts'] = $prefix . 'Comment';
 	}
 
 	/**
@@ -34,7 +36,7 @@ class BBXP_Vanilla extends BBXP
 	 */
 	function fetch_users ()
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->users . ' WHERE 1');
+		return $this->fetch ('SELECT * FROM ' . $this->db->table['users'] . ' WHERE 1');
 	}
 
 	/**
@@ -42,7 +44,7 @@ class BBXP_Vanilla extends BBXP
 	 */
 	function fetch_forums ()
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->forums . ' WHERE 1');
+		return $this->fetch ('SELECT * FROM ' . $this->db->table['forums'] . ' WHERE 1');
 	}
 
 	/**
@@ -50,7 +52,7 @@ class BBXP_Vanilla extends BBXP
 	 */
 	function fetch_topics ()
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->topics . ' WHERE 1');
+		return $this->fetch ('SELECT * FROM ' . $this->db->table['topics'] . ' WHERE 1');
 	}
 
 	/**
@@ -58,7 +60,7 @@ class BBXP_Vanilla extends BBXP
 	 */
 	function fetch_posts ($topic_id)
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->posts . ' WHERE DiscussionID="' . $topic_id . '"');
+		return $this->fetch ('SELECT * FROM ' . $this->db->table['posts'] . ' WHERE DiscussionID="' . $topic_id . '"');
 	}
 
 	/**

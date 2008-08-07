@@ -97,7 +97,7 @@ class BBIP_phpBB extends BBIP
 			$data['user_website'] = $user['url'];
 			$data['user_form_salt'] = $user['form_salt'];
 			$this->insert_groups ($user['id'], $user['meta']['groups']);
-			$this->insert ($this->db->users, $data);
+			$this->insert ($this->db->tables['users'], $data);
 		}
 	}
 
@@ -112,7 +112,7 @@ class BBIP_phpBB extends BBIP
 			$meta = $forum['meta'];
 			$data['forum_slug'] = $meta['forum_slug'];
 			$data['forum_order'] = $meta['forum_order'];
-			$this->insert ($this->db->forums, $data);
+			$this->insert ($this->db->tables['forums'], $data);
 		}
 	}
 
@@ -128,7 +128,7 @@ class BBIP_phpBB extends BBIP
 			$data['topic_status'] = $topic['status'];
 			$meta = $topic['meta'];
 			$data['topic_type'] = $meta['type'];
-			$this->insert ($this->db->topics, $data);
+			$this->insert ($this->db->tables['topics'], $data);
 			$this->insert_posts ($topic['id'], $topic['in'], $topic['posts']);
 		}
 	}
@@ -145,7 +145,7 @@ class BBIP_phpBB extends BBIP
 			$data['post_time'] = $post['incept'];
 			$meta = $post['meta'];
 			$data['poster_ip'] = $meta['ip_address'];
-			$this->insert ($this->db->posts, $data);
+			$this->insert ($this->db->tables['posts'], $data);
 		}
 	}
 
@@ -158,15 +158,15 @@ class BBIP_phpBB extends BBIP
 			{
 				$this->insert ($this->db->groups, array ('group_name' => $group));
 			}
-			$group_id = $this->fetch ('SELECT group_id FROM ' . $this->db->groups . ' WHERE group_name="' . $group . '" LIMIT 1');
+			$group_id = $this->fetch ('SELECT group_id FROM ' . $this->db->tables['groups'] . ' WHERE group_name="' . $group . '" LIMIT 1');
 			$data = array ('group_id' => $group_id, 'user_id' => $user_id);
-			$this->insert ($this->db->user_group, $data);
+			$this->insert ($this->db->tables['user_group'], $data);
 		}
 	}
 
 	function group_exists ($group_name)
 	{
-		return $this->fetch ('SELECT group_name FROM ' . $this->db->groups . ' WHERE group_name="' . $group_name . '" LIMIT 1');
+		return $this->fetch ('SELECT group_name FROM ' . $this->db->tables['groups'] . ' WHERE group_name="' . $group_name . '" LIMIT 1');
 	}
 	
 }

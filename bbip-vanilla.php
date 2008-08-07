@@ -85,7 +85,7 @@ class BBIP_Vanilla extends BBIP
 			$data['Picture'] = $meta['picture'];
 			$data['Icon'] = $meta['icon'];
 			$data['RoleID'] = $meta['role_id'];
-			$this->insert ($this->db->users, $data);
+			$this->insert ($this->db->table['users'], $data);
 		}
 	}
 
@@ -96,7 +96,7 @@ class BBIP_Vanilla extends BBIP
 			$data['CategoryID'] = $forum['id'];
 			$data['Name'] = $forum['title'];
 			$data['Description'] = $forum['content'];
-			$this->insert ($this->db->forums, $data);
+			$this->insert ($this->db->table['forums'], $data);
 		}
 	}
 
@@ -114,7 +114,7 @@ class BBIP_Vanilla extends BBIP
 			$data['Closed'] = !$meta['open'];
 			$data['Sticky'] = $meta['sticky'];
 			$data['Sink'] = $meta['sink'];
-			$this->insert ($this->db->topics, $data);
+			$this->insert ($this->db->table['topics'], $data);
 			$this->insert_posts ($topic['id'], $topic['in'], $topic['posts']);
 		}
 	}
@@ -134,7 +134,7 @@ class BBIP_Vanilla extends BBIP
 			}
 			$meta = $post['meta'];
 			$data['FormatType'] = $meta['format_type'];
-			$this->insert ($this->db->posts, $data);
+			$this->insert ($this->db->table['posts'], $data);
 		}
 	}
 	

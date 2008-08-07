@@ -7,25 +7,22 @@
  * with the WFXP class, allowing for exportation of phpBB data to
  * a standard XML file.
  */
-class WFXP_phpBB extends WFXP
+class BBXP_phpBB extends BBXP
 {
-
-	function WFXP_phpBB ()
-	{
-		// Initialize!
-	}
 
 	/**
 	 * Sets up table names for database.
 	 */
-	function initialize_db ($prefix)
+	function initialize_db ($host, $user, $pass, $database, $prefix)
 	{
-		$this->db->users = $prefix . 'users';
-		$this->db->forums = $prefix . 'forums';
-		$this->db->topics = $prefix . 'topics';
-		$this->db->posts = $prefix . 'posts';
-		$this->db->groups = $prefix . 'groups';
-		$this->db->user_group = $prefix . 'user_group';
+		$this->db->db_connect_host (array ('host' => $host, 'user' => $user, 'password' => $pass));
+		$this->db->select ($database, $this->db->dbh);
+		$this->db->tables['users'] = $prefix . 'users';
+		$this->db->tables['forums'] = $prefix . 'forums';
+		$this->db->tables['topics'] = $prefix . 'topics';
+		$this->db->tables['posts'] = $prefix . 'posts';
+		$this->db->tables['groups'] = $prefix . 'groups';
+		$this->db->tables['user_group'] = $prefix . 'user_group';
 	}
 
 	/**
@@ -41,7 +38,7 @@ class WFXP_phpBB extends WFXP
 	 */
 	function fetch_users ()
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->users . ' WHERE 1');
+		return $this->fetch ('SELECT * FROM ' . $this->db->tables['users'] . ' WHERE 1');
 	}
 
 	/**
@@ -49,7 +46,7 @@ class WFXP_phpBB extends WFXP
 	 */
 	function fetch_forums ()
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->forums . ' WHERE 1');
+		return $this->fetch ('SELECT * FROM ' . $this->db->tables['forums'] . ' WHERE 1');
 	}
 
 	/**
@@ -57,7 +54,7 @@ class WFXP_phpBB extends WFXP
 	 */
 	function fetch_topics ()
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->topics . ' WHERE 1');
+		return $this->fetch ('SELECT * FROM ' . $this->db->tables['topics'] . ' WHERE 1');
 	}
 
 	/**
@@ -65,7 +62,7 @@ class WFXP_phpBB extends WFXP
 	 */
 	function fetch_posts ($topic_id)
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->posts . ' WHERE topic_id="' . $topic_id . '"');
+		return $this->fetch ('SELECT * FROM ' . $this->db->tables['posts'] . ' WHERE topic_id="' . $topic_id . '"');
 	}
 
 	/**
@@ -73,7 +70,7 @@ class WFXP_phpBB extends WFXP
 	 */
 	function fetch_group_names ()
 	{
-		$raw_groups = $this->fetch ('SELECT group_id, group_name FROM ' . $this->db->groups . ' WHERE 1');
+		$raw_groups = $this->fetch ('SELECT group_id, group_name FROM ' . $this->db->tables['groups'] . ' WHERE 1');
 		if ($raw_groups)
 		{
 			foreach ($raw_groups as $group)
@@ -89,7 +86,7 @@ class WFXP_phpBB extends WFXP
 	 */
 	function fetch_user_groups ($user_id, $group_names)
 	{
-		$group_ids = $this->fetch ('SELECT group_id FROM ' . $this->db->user_group . ' WHERE user_id="' . $user_id . '"');
+		$group_ids = $this->fetch ('SELECT group_id FROM ' . $this->db->tables['user_group'] . ' WHERE user_id="' . $user_id . '"');
 		if ($group_ids)
 		{
 			foreach ($group_ids as $group_id)
@@ -229,4 +226,3 @@ class WFXP_phpBB extends WFXP
 }
 
 ?>
-
