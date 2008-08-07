@@ -13,16 +13,15 @@ class BBXP_phpBB extends BBXP
 	/**
 	 * Sets up table names for database.
 	 */
-	function initialize_db ($host, $user, $pass, $database, $prefix)
+	function initialize_db ($prefix)
 	{
-		$this->db->db_connect_host (array ('host' => $host, 'user' => $user, 'password' => $pass));
-		$this->db->select ($database, $this->db->dbh);
-		$this->db->tables['users'] = $prefix . 'users';
-		$this->db->tables['forums'] = $prefix . 'forums';
-		$this->db->tables['topics'] = $prefix . 'topics';
-		$this->db->tables['posts'] = $prefix . 'posts';
-		$this->db->tables['groups'] = $prefix . 'groups';
-		$this->db->tables['user_group'] = $prefix . 'user_group';
+		$this->db->tables['users'] = FALSE;
+		$this->db->tables['forums'] = FALSE;
+		$this->db->tables['topics'] = FALSE;
+		$this->db->tables['posts'] = FALSE;
+		$this->db->tables['groups'] = FALSE;
+		$this->db->tables['user_group'] = FALSE;
+		$this->db->set_prefix ($prefix);
 	}
 
 	/**

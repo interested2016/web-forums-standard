@@ -21,9 +21,16 @@ function export_main ()
 {
 	global $bbdb;
 	export_init ();
+
+	$user = $_POST['user'];
+	$password = $_POST['password'];
+	$database = $_POST['database'];
+	$host = $_POST['host'];
+	$prefix = $_POST['prefix'];
+
 	$bbxp = new BBXP_phpBB;
-	$bbxp->db = new BPDB (array ());
-	$bbxp->initialize_db ($_POST['host'], $_POST['user'], $_POST['password'], $_POST['database'], $_POST['prefix']);
+	$bbxp->db = new BPDB (array ('name' => $database, 'user' => $user, 'password' => $password, 'host' => $host));
+	$bbxp->initialize_db ($prefix);
 	$filename = 'phpbb' . date ('Y-m-d') . '.xml';
 	
 	$bbxp->write_header ($filename);
