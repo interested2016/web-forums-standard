@@ -9,7 +9,8 @@ function export_init ()
 	{
 		require_once ('exporter/bbxp.php');
 		require_once ('exporter/bbxp-vanilla.php');
-		require_once ('exporter/bpdb.php');
+		require_once ('backpress/bpdb.php');
+		require_once ('backpress/functions.core.php');
 	}
 }
 
@@ -18,12 +19,18 @@ function export_init ()
  */
 function export_main ()
 {
-	global $bbdb;
 	export_init ();
+
+	$user = $_POST['user'];
+	$password = $_POST['password'];
+	$database = $_POST['database'];
+	$host = $_POST['host'];
+	$prefix = $_POST['prefix'];
+
 	$bbxp = new BBXP_Vanilla;
-	$bbxp->db = new BPDB;
-	$bbxp->initialize_db ($_POST['prefix']);
-	$filename = 'vanilla' . date ('Y-m-d') . '.xml';
+	$bbxp->db = new BPDB (array ('name' => $database, 'user' => $user, 'password' => $password, 'host' => $host));
+	$bbxp->initialize_db ($prefix);
+	$filename = 'phpbb' . date ('Y-m-d') . '.xml';
 
 	$bbxp->write_header ($filename);
 	$bbxp->write_users ();
@@ -52,7 +59,7 @@ function export_page ()
 	</head>
 	<body>
 
-		<h2>Export') ?></h2>
+		<h2>Export</h2>
 		<p>When you submit the form below, Vanilla will generate a BBXF file for you to save to your computer.</p>
 		<p>This file will contain data about your users, forums, topics, and posts.  You can use the Import function of another Vanilla installation or another compatible web forums software to import this data.</p>
 		<form action="" method="post">
@@ -92,4 +99,3 @@ else
 }	
 
 ?>
-
