@@ -15,12 +15,11 @@ class BBXP_Vanilla extends BBXP
 	 */
 	function initialize_db ($prefix)
 	{
-		$this->db->db_connect_host (array ('host' => $host, 'user' => $user, 'password' => $password);
-		$this->db->select ($database);
-		$this->db->table['users'] = $prefix . 'User';
-		$this->db->table['forums'] = $prefix . 'Category';
-		$this->db->table['topics'] = $prefix . 'Discussion';
-		$this->db->table['posts'] = $prefix . 'Comment';
+		$this->db->tables['User'] = FALSE;
+		$this->db->tables['Category'] = FALSE;
+		$this->db->tables['Discussion'] = FALSE;
+		$this->db->tables['Comment'] = FALSE;
+		$this->db->set_prefix ($prefix);
 	}
 
 	/**
@@ -36,7 +35,7 @@ class BBXP_Vanilla extends BBXP
 	 */
 	function fetch_users ()
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->table['users'] . ' WHERE 1');
+		return $this->fetch ('SELECT * FROM ' . $this->db->User . ' WHERE 1');
 	}
 
 	/**
@@ -44,7 +43,7 @@ class BBXP_Vanilla extends BBXP
 	 */
 	function fetch_forums ()
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->table['forums'] . ' WHERE 1');
+		return $this->fetch ('SELECT * FROM ' . $this->db->Category . ' WHERE 1');
 	}
 
 	/**
@@ -52,7 +51,7 @@ class BBXP_Vanilla extends BBXP
 	 */
 	function fetch_topics ()
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->table['topics'] . ' WHERE 1');
+		return $this->fetch ('SELECT * FROM ' . $this->db->Discussion . ' WHERE 1');
 	}
 
 	/**
@@ -60,7 +59,7 @@ class BBXP_Vanilla extends BBXP
 	 */
 	function fetch_posts ($topic_id)
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->table['posts'] . ' WHERE DiscussionID="' . $topic_id . '"');
+		return $this->fetch ('SELECT * FROM ' . $this->db->Comment . ' WHERE DiscussionID="' . $topic_id . '"');
 	}
 
 	/**
@@ -73,12 +72,12 @@ class BBXP_Vanilla extends BBXP
 		$user['pass']['type'] = 'md5';
 		$user['pass']['pass'] = $raw_user['Password'];
 		$user['incept'] = $raw_user['DateFirstVisit'];
-		$user['meta'][] = array ('role_id' => $raw_user['RoleID']);
-		$user['meta'][] = array ('first_name' => $raw_user['FirstName']);
-		$user['meta'][] = array ('last_name' => $raw_user['LastName']);
-		$user['meta'][] = array ('email' => $raw_user['Email']);
-		$user['meta'][] = array ('picture' => $raw_user['Picture']);
-		$user['meta'][] = array ('icon' => $raw_user['Icon']);
+		$user['meta']['role_id'] = $raw_user['RoleID'];
+		$user['meta']['first_name'] = $raw_user['FirstName'];
+		$user['meta']['last_name'] = $raw_user['LastName'];
+		$user['meta']['email'] = $raw_user['Email'];
+		$user['meta']['picture'] = $raw_user['Picture'];
+		$user['meta']['icon'] = $raw_user['Icon'];
 		return $user;
 	}
 
@@ -91,7 +90,7 @@ class BBXP_Vanilla extends BBXP
 		$forum['in'] = 0;
 		$forum['title'] = $raw_forum['Name'];
 		$forum['content'] = $raw_forum['Description'];
-		$forum['meta'][] = array ('order' => $raw_forum['Priority']);
+		$forum['meta']['order'] = $raw_forum['Priority'];
 		return $forum;
 	}
 
@@ -105,10 +104,10 @@ class BBXP_Vanilla extends BBXP
 		$topic['in'] = $raw_topic['CategoryID'];
 		$topic['title'] = $raw_topic['Name'];
 		$topic['incept'] = $raw_topic['DateCreated'];
-		$topic['meta'][] = array ('open' => !$raw_topic['Closed']);
-		$topic['meta'][] = array ('sticky' => $raw_topic['Sticky']);
-		$topic['meta'][] = array ('active' => $raw_topic['Active']);
-		$topic['meta'][] = array ('sink' => $raw_topic['Sink']);
+		$topic['meta']['open'] = !$raw_topic['Closed'];
+		$topic['meta']['sticky'] = $raw_topic['Sticky'];
+		$topic['meta']['active'] = $raw_topic['Active'];
+		$topic['meta']['sink'] = $raw_topic['Sink'];
 		foreach ($raw_posts as $raw_post)
 		{
 			$topic['posts'][] = $this->prep_post_data ($raw_post);
@@ -127,7 +126,7 @@ class BBXP_Vanilla extends BBXP
 		$post['content'] = $raw_post['Body'];
 		$post['incept'] = $raw_post['DateCreated'];
 		$post['status'] = $raw_post['Deleted'];
-		$post['meta'][] = array ('format' => $raw_post['FormatType']);
+		$post['meta']['format'] = $raw_post['FormatType'];
 		return $post;
 	}
 
@@ -165,7 +164,7 @@ class BBXP_Vanilla extends BBXP
 		$topics = $this->fetch_topics ();
 		foreach ($topics as $topic)
 		{
-			$topic_posts = $this->fetch_posts ($topic['topic_id']);
+			$topic_posts = $this->fetch_posts ($topic['DiscussionID']);
 			$topic = $this->prep_topic_data ($topic, $topic_posts);
 			$this->add_topic ($topic);
 		}
@@ -174,4 +173,3 @@ class BBXP_Vanilla extends BBXP
 }
 
 ?>
-

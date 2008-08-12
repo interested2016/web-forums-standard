@@ -105,15 +105,15 @@ class BBXP_bbPress extends BBXP
 		$user['pass']['pass'] = $raw_user['user_pass'];
 		$user['incept'] = $raw_user['user_registered'];
 		$user['status'] = $raw_user['user_status'];
-		$user['meta'][] = array ('nicename' => $raw_user['user_nicename']);
-		$user['meta'][] = array ('email' => $raw_user['user_email']);
-		$user['meta'][] = array ('url' => $raw_user['user_url']);
-		$user['meta'][] = array ('display_name' => $raw_user['display_name']);
+		$user['meta']['nicename'] = $raw_user['user_nicename'];
+		$user['meta']['email'] = $raw_user['user_email'];
+		$user['meta']['url'] = $raw_user['user_url'];
+		$user['meta']['display_name'] = $raw_user['display_name'];
 		if ($raw_meta)
 		{
 			foreach ($raw_meta as $raw_meta_entry)
 			{
-				$user['meta'][] = $this->prep_meta_data ($raw_meta_entry);
+				$user['meta'][$raw_meta_entry['meta_key']] = $raw_meta_entry['meta_value'];
 			}
 		}
 		return $user;
@@ -128,8 +128,8 @@ class BBXP_bbPress extends BBXP
 		$forum['in'] = $raw_forum['forum_parent'];
 		$forum['title'] = $raw_forum['forum_name'];
 		$forum['content'] = $raw_forum['forum_desc'];
-		$forum['meta'][] = array ('slug' => $raw_forum['forum_slug']);
-		$forum['meta'][] = array ('order' => $raw_forum['forum_order']);
+		$forum['meta']['slug'] = $raw_forum['forum_slug'];
+		$forum['meta']['order'] = $raw_forum['forum_order'];
 		return $forum;
 	}
 
@@ -144,14 +144,14 @@ class BBXP_bbPress extends BBXP
 		$topic['title'] = $raw_topic['topic_title'];
 		$topic['incept'] = $raw_topic['topic_start_time'];
 		$topic['status'] = $raw_topic['topic_status'];
-		$topic['meta'][] = array ('slug' => $raw_topic['topic_slug']);
-		$topic['meta'][] = array ('open' => $raw_topic['topic_open']);
-		$topic['meta'][] = array ('sticky' => $raw_topic['topic_sticky']);
+		$topic['meta']['slug'] = $raw_topic['topic_slug'];
+		$topic['meta']['open'] = $raw_topic['topic_open'];
+		$topic['meta']['sticky'] = $raw_topic['topic_sticky'];
 		if ($raw_meta)
 		{
 			foreach ($raw_meta as $raw_meta_entry)
 			{
-				$topic['meta'][] = $this->prep_meta_data ($raw_meta_entry);
+				$topic['meta'][$raw_meta_entry['meta_key']] = $raw_meta_entry['meta_value'];
 			}
 		}
 		if ($raw_tags)
@@ -179,7 +179,7 @@ class BBXP_bbPress extends BBXP
 		$post['content'] = $raw_post['post_text'];
 		$post['incept'] = $raw_post['post_time'];
 		$post['status'] = $raw_post['post_status'];
-		$post['meta'][] = array ('ip_address' => $raw_post['poster_ip']);
+		$post['meta']['ip_address'] = $raw_post['poster_ip'];
 		return $post;
 	}
 
@@ -189,14 +189,6 @@ class BBXP_bbPress extends BBXP
 	function prep_tag_data ($raw_tag)
 	{
 		return $raw_tag['name'];
-	}
-
-	/**
-	 * Prepares retrieved meta data for output.
-	 */
-	function prep_meta_data ($raw_meta)
-	{
-		return array ($raw_meta['meta_key'] => $raw_meta['meta_value']);
 	}
 
 	/**

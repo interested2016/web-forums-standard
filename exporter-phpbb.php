@@ -19,7 +19,6 @@ function export_init ()
  */
 function export_main ()
 {
-	global $bbdb;
 	export_init ();
 
 	$user = $_POST['user'];

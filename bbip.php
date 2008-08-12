@@ -323,6 +323,7 @@ class BBIP extends BBXF_Parse
 			$this->fetch_existing_topics ();
 			$this->prep_existing_content_data ();
 		}
+		
 		$this->init_id_mappings ();
 		$this->init_next_ids ();
 	

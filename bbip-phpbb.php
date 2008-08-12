@@ -76,10 +76,10 @@ class BBIP_phpBB extends BBIP
 			$data['username'] = $user['login'];
 			// Check type!
 			$data['user_password'] = $user['pass']['pass'];
-			$data['user_regdate'] = $user['incept'];
+			$data['user_regdate'] = strtotime ($user['incept']);
 			$meta = $user['meta'];
-			$data['user_type'] = $user['type']);
-			$data['user_permissions'] = $user['permissions_phpBB']);
+			$data['user_type'] = $user['type'];
+			$data['user_permissions'] = $user['permissions_phpBB'];
 			$data['user_ip'] = $user['ip_address'];
 			$data['username_clean'] = $user['nice_name'];
 			$data['user_email'] = $user['email'];
@@ -92,12 +92,12 @@ class BBIP_phpBB extends BBIP
 			$data['user_icq'] = $user['icq'];
 			$data['user_aim'] = $user['aim'];
 			$data['user_yim'] = $user['yim'];
-			$data['user_msnm') = $user['msn'];
+			$data['user_msnm'] = $user['msn'];
 			$data['user_jabber'] = $user['jabber'];
 			$data['user_website'] = $user['url'];
 			$data['user_form_salt'] = $user['form_salt'];
 			$this->insert_groups ($user['id'], $user['meta']['groups']);
-			$this->insert ($this->db->tables['users'], $data);
+			$this->insert ($this->db->users, $data);
 		}
 	}
 
@@ -112,7 +112,7 @@ class BBIP_phpBB extends BBIP
 			$meta = $forum['meta'];
 			$data['forum_slug'] = $meta['forum_slug'];
 			$data['forum_order'] = $meta['forum_order'];
-			$this->insert ($this->db->tables['forums'], $data);
+			$this->insert ($this->db->forums, $data);
 		}
 	}
 
@@ -124,11 +124,11 @@ class BBIP_phpBB extends BBIP
 			$data['forum_id'] = $topic['in'];
 			$data['topic_title'] = $topic['title'];
 			$data['topic_poster'] = $topic['author'];
-			$data['topic_time'] = $topic['incept'];
+			$data['topic_time'] = strtotime ($topic['incept']);
 			$data['topic_status'] = $topic['status'];
 			$meta = $topic['meta'];
 			$data['topic_type'] = $meta['type'];
-			$this->insert ($this->db->tables['topics'], $data);
+			$this->insert ($this->db->topics, $data);
 			$this->insert_posts ($topic['id'], $topic['in'], $topic['posts']);
 		}
 	}
@@ -142,10 +142,10 @@ class BBIP_phpBB extends BBIP
 			$data['topic_id'] = $topic_id;
 			$data['poster_id'] = $post['author'];
 			$data['post_text'] = $post['content'];
-			$data['post_time'] = $post['incept'];
+			$data['post_time'] = strtotime ($post['incept']);
 			$meta = $post['meta'];
 			$data['poster_ip'] = $meta['ip_address'];
-			$this->insert ($this->db->tables['posts'], $data);
+			$this->insert ($this->db->posts, $data);
 		}
 	}
 
@@ -158,15 +158,15 @@ class BBIP_phpBB extends BBIP
 			{
 				$this->insert ($this->db->groups, array ('group_name' => $group));
 			}
-			$group_id = $this->fetch ('SELECT group_id FROM ' . $this->db->tables['groups'] . ' WHERE group_name="' . $group . '" LIMIT 1');
+			$group_id = $this->fetch ('SELECT group_id FROM ' . $this->db->groups . ' WHERE group_name="' . $group . '" LIMIT 1');
 			$data = array ('group_id' => $group_id, 'user_id' => $user_id);
-			$this->insert ($this->db->tables['user_group'], $data);
+			$this->insert ($this->db->user_group, $data);
 		}
 	}
 
 	function group_exists ($group_name)
 	{
-		return $this->fetch ('SELECT group_name FROM ' . $this->db->tables['groups'] . ' WHERE group_name="' . $group_name . '" LIMIT 1');
+		return $this->fetch ('SELECT group_name FROM ' . $this->db->groups . ' WHERE group_name="' . $group_name . '" LIMIT 1');
 	}
 	
 }

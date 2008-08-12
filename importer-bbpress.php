@@ -70,9 +70,6 @@ function import_main ()
 		$bbip->file_contents = $bbip->remove_element ($current[1], $bbip->file_contents);
 	}
 	$bbip->check_for_duplicates ();
-	print ('<pre>');
-	print_r ($bbip->forum_data);
-	print ('</pre>');
 
 	$bbip->import_prep ();
 	if ($bbip->import_users)

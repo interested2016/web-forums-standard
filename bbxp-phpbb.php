@@ -37,7 +37,7 @@ class BBXP_phpBB extends BBXP
 	 */
 	function fetch_users ()
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->tables['users'] . ' WHERE 1');
+		return $this->fetch ('SELECT * FROM ' . $this->db->users . ' WHERE user_type!="2"');
 	}
 
 	/**
@@ -45,7 +45,7 @@ class BBXP_phpBB extends BBXP
 	 */
 	function fetch_forums ()
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->tables['forums'] . ' WHERE 1');
+		return $this->fetch ('SELECT * FROM ' . $this->db->forums . ' WHERE 1');
 	}
 
 	/**
@@ -53,7 +53,7 @@ class BBXP_phpBB extends BBXP
 	 */
 	function fetch_topics ()
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->tables['topics'] . ' WHERE 1');
+		return $this->fetch ('SELECT * FROM ' . $this->db->topics . ' WHERE 1');
 	}
 
 	/**
@@ -61,7 +61,7 @@ class BBXP_phpBB extends BBXP
 	 */
 	function fetch_posts ($topic_id)
 	{
-		return $this->fetch ('SELECT * FROM ' . $this->db->tables['posts'] . ' WHERE topic_id="' . $topic_id . '"');
+		return $this->fetch ('SELECT * FROM ' . $this->db->posts . ' WHERE topic_id="' . $topic_id . '"');
 	}
 
 	/**
@@ -69,7 +69,7 @@ class BBXP_phpBB extends BBXP
 	 */
 	function fetch_group_names ()
 	{
-		$raw_groups = $this->fetch ('SELECT group_id, group_name FROM ' . $this->db->tables['groups'] . ' WHERE 1');
+		$raw_groups = $this->fetch ('SELECT group_id, group_name FROM ' . $this->db->groups . ' WHERE 1');
 		if ($raw_groups)
 		{
 			foreach ($raw_groups as $group)
@@ -85,12 +85,12 @@ class BBXP_phpBB extends BBXP
 	 */
 	function fetch_user_groups ($user_id, $group_names)
 	{
-		$group_ids = $this->fetch ('SELECT group_id FROM ' . $this->db->tables['user_group'] . ' WHERE user_id="' . $user_id . '"');
+		$group_ids = $this->fetch ('SELECT group_id FROM ' . $this->db->user_group . ' WHERE user_id="' . $user_id . '"');
 		if ($group_ids)
 		{
 			foreach ($group_ids as $group_id)
 			{
-				$groups[] = $group_names[$group_id];
+				$groups[] = $group_names[$group_id['group_id']];
 			}
 		}
 		return $groups;
@@ -105,28 +105,28 @@ class BBXP_phpBB extends BBXP
 		$user['login'] = $raw_user['username'];
 		$user['pass']['type'] = 'phpass';
 		$user['pass']['pass'] = $raw_user['user_password'];
-		$user['incept'] = $raw_user['user_regdate'];
+		$user['incept'] = date ('Y-m-d G:i:s', $raw_user['user_regdate']);
 		$user['status'] = 0;
-		$user['meta'][] = array ('type' => $raw_user['user_type']);
-		$user['meta'][] = array ('permissions_phpBB' => $raw_user['user_permissions']);
-		$user['meta'][] = array ('ip_address' => $raw_user['user_ip']);
-		$user['meta'][] = array ('nice_name' => $raw_user['username_clean']);
-		$user['meta'][] = array ('email' => $raw_user['user_email']);
-		$user['meta'][] = array ('email_hash' => $raw_user['user_email_hash']);
-		$user['meta'][] = array ('birthday' => $raw_user['user_birthday']);
-		$user['meta'][] = array ('options' => $raw_user['user_options']);
-		$user['meta'][] = array ('avatar' => $raw_user['user_avatar']);
-		$user['meta'][] = array ('signature' => $raw_user['user_sig']);
-		$user['meta'][] = array ('location' => $raw_user['user_from']);
-		$user['meta'][] = array ('icq' => $raw_user['user_icq']);
-		$user['meta'][] = array ('aim' => $raw_user['user_aim']);
-		$user['meta'][] = array ('yim' => $raw_user['user_yim']);
-		$user['meta'][] = array ('msn' => $raw_user['user_msnm']);
-		$user['meta'][] = array ('jabber' => $raw_user['user_jabber']);
-		$user['meta'][] = array ('url' => $raw_user['user_website']);
-		$user['meta'][] = array ('form_salt' => $raw_user['user_form_salt']);
+		$user['meta']['type'] = $raw_user['user_type'];
+		$user['meta']['permissions_phpBB'] = $raw_user['user_permissions'];
+		$user['meta']['ip_address'] = $raw_user['user_ip'];
+		$user['meta']['nice_name'] = $raw_user['username_clean'];
+		$user['meta']['email'] = $raw_user['user_email'];
+		$user['meta']['email_hash'] = $raw_user['user_email_hash'];
+		$user['meta']['birthday'] = $raw_user['user_birthday'];
+		$user['meta']['options'] = $raw_user['user_options'];
+		$user['meta']['avatar'] = $raw_user['user_avatar'];
+		$user['meta']['signature'] = $raw_user['user_sig'];
+		$user['meta']['location'] = $raw_user['user_from'];
+		$user['meta']['icq'] = $raw_user['user_icq'];
+		$user['meta']['aim'] = $raw_user['user_aim'];
+		$user['meta']['yim'] = $raw_user['user_yim'];
+		$user['meta']['msn'] = $raw_user['user_msnm'];
+		$user['meta']['jabber'] = $raw_user['user_jabber'];
+		$user['meta']['url'] = $raw_user['user_website'];
+		$user['meta']['form_salt'] = $raw_user['user_form_salt'];
 		$groups = implode ('||', $groups);
-		$user['meta'][] = array ('groups' => $groups);
+		$user['meta']['groups'] = $groups;
 		return $user;
 	}
 
@@ -139,11 +139,11 @@ class BBXP_phpBB extends BBXP
 		$forum['in'] = $raw_forum['parent_id'];
 		$forum['title'] = $raw_forum['forum_name'];
 		$forum['content'] = $raw_forum['forum_desc'];
-		$forum['meta'][] = array ('link' => $raw_forum['forum_link']);
-		$forum['meta'][] = array ('password' => $raw_forum['forum_password']);
-		$forum['meta'][] = array ('rules' => $raw_forum['forum_rules']);
-		$forum['meta'][] = array ('type' => $raw_forum['forum_type']);
-		$forum['meta'][] = array ('flags' => $raw_forum['forum_flags']);
+		$forum['meta']['link'] = $raw_forum['forum_link'];
+		$forum['meta']['password'] = $raw_forum['forum_password'];
+		$forum['meta']['rules'] = $raw_forum['forum_rules'];
+		$forum['meta']['type'] = $raw_forum['forum_type'];
+		$forum['meta']['flags'] = $raw_forum['forum_flags'];
 		return $forum;
 	}
 
@@ -156,9 +156,9 @@ class BBXP_phpBB extends BBXP
 		$topic['author'] = $raw_topic['topic_poster'];
 		$topic['in'] = $raw_topic['forum_id'];
 		$topic['title'] = $raw_topic['topic_title'];
-		$topic['incept'] = $raw_topic['topic_time'];
+		$topic['incept'] = date ('Y-m-d G:i:s', $raw_topic['topic_time']);
 		$topic['status'] = $raw_topic['topic_status'];
-		$topic['meta'][] = array ('type' => $raw_topic['topic_type']);
+		$topic['meta']['type'] = $raw_topic['topic_type'];
 		foreach ($raw_posts as $raw_post)
 		{
 			$topic['posts'][] = $this->prep_post_data ($raw_post);
@@ -175,8 +175,8 @@ class BBXP_phpBB extends BBXP
 		$post['author'] = $raw_post['poster_id'];
 		$post['title'] = '';
 		$post['content'] = $raw_post['post_text'];
-		$post['incept'] = $raw_post['post_time'];
-		$post['meta'][] = array ('ip_address' => 'poster_ip');
+		$post['incept'] = date ('Y-m-d G:i:s', $raw_post['post_time']);
+		$post['meta']['ip_address'] = $raw_post['poster_ip'];
 		return $post;
 	}
 
